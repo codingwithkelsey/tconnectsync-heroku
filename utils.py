@@ -1,6 +1,7 @@
 from variables import secret, interval_mins, tconnect_secret, default_features
 
 import io
+import time as time_module
 import traceback
 import datetime
 
@@ -49,6 +50,22 @@ def token_required(f):
 def setup():
     tconnect = TConnectApi(tconnect_secret.TCONNECT_EMAIL, tconnect_secret.TCONNECT_PASSWORD)
     nightscout = NightscoutApi(tconnect_secret.NS_URL, tconnect_secret.NS_SECRET)
+
+    # Nightscout on small hosts intermittently 502s on treatment uploads, and
+    # tconnectsync aborts the whole run on the first failure. Retry transient
+    # upload failures with backoff so long backfills survive the hiccups.
+    orig_upload = nightscout.upload_entry
+    def upload_with_retry(*args, **kwargs):
+        for attempt in range(4):
+            try:
+                return orig_upload(*args, **kwargs)
+            except Exception as e:
+                if attempt == 3:
+                    raise
+                wait = 2 ** attempt
+                print("upload_entry failed (%s); retrying in %ds" % (e, wait))
+                time_module.sleep(wait)
+    nightscout.upload_entry = upload_with_retry
 
     return tconnect, nightscout
 
