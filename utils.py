@@ -54,7 +54,7 @@ def setup():
 
 def get_time_args(days, end_days_ago=None):
     if days:
-        days = int(days)
+        days = float(days)  # fractional days allowed, e.g. days=0.5 for 12 hours
     else:
         days = 1
 
@@ -64,7 +64,7 @@ def get_time_args(days, end_days_ago=None):
         # Useful for backfilling history: the per-event-type processors skip
         # everything at/before the newest Nightscout entry in the window, so a
         # window that includes today can never reach behind today's uploads.
-        time_end -= datetime.timedelta(days=int(end_days_ago))
+        time_end -= datetime.timedelta(days=float(end_days_ago))
     time_start = time_end - datetime.timedelta(days=days)
 
     return time_start, time_end
