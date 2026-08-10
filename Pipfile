@@ -16,4 +16,4 @@ setuptools = "*"
 python_version = "3.13"
 
 [scripts]
-web = "gunicorn app:app"
+web = "gunicorn --timeout 900 app:app"
