@@ -54,7 +54,8 @@ def update_route():
     days = request.values.get("days")
     pretend = bool(request.values.get("pretend"))
     features = parse_features(request.values.get("features"))
-    return as_text(*run_update(days, pretend, features))
+    end_days_ago = request.values.get("end_days_ago")
+    return as_text(*run_update(days, pretend, features, end_days_ago))
 
 """Runs tconnectsync in the background, does not return an error if one occurs."""
 @app.route('/run')
@@ -63,7 +64,8 @@ def run_route():
     days = request.values.get("days")
     pretend = bool(request.values.get("pretend"))
     features = parse_features(request.values.get("features"))
-    Thread(target=run_update, kwargs={'days': days, 'pretend': pretend, 'features': features}).start()
+    end_days_ago = request.values.get("end_days_ago")
+    Thread(target=run_update, kwargs={'days': days, 'pretend': pretend, 'features': features, 'end_days_ago': end_days_ago}).start()
     return 'Triggered job'
 
 if interval_mins:

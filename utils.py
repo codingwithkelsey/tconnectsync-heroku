@@ -52,20 +52,26 @@ def setup():
 
     return tconnect, nightscout
 
-def get_time_args(days):
+def get_time_args(days, end_days_ago=None):
     if days:
         days = int(days)
     else:
         days = 1
-    
+
     time_end = datetime.datetime.now()
+    if end_days_ago:
+        # End the window in the past (e.g. end_days_ago=1 ends yesterday).
+        # Useful for backfilling history: the per-event-type processors skip
+        # everything at/before the newest Nightscout entry in the window, so a
+        # window that includes today can never reach behind today's uploads.
+        time_end -= datetime.timedelta(days=int(end_days_ago))
     time_start = time_end - datetime.timedelta(days=days)
 
     return time_start, time_end
 
-def run_update(days, pretend, features):
+def run_update(days, pretend, features, end_days_ago=None):
     tconnect, nightscout = setup()
-    time_start, time_end = get_time_args(days)
+    time_start, time_end = get_time_args(days, end_days_ago)
 
     if features is None:
         features = DEFAULT_FEATURES
