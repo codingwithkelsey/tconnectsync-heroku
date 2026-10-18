@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-tconnectsync = {git = "https://github.com/jwoglom/tconnectsync.git", ref = "7c4b2f4ddb560835c227aa75edd7dc3b57740d37"}
+tconnectsync = {git = "https://github.com/jwoglom/tconnectsync.git", ref = "4de47729c091f11e3265a4b21d0766bb201dfbc5"}
 flask-apscheduler = {git = "https://github.com/viniciuschiele/flask-apscheduler"}
 gunicorn = "*"
 setuptools = "*"
